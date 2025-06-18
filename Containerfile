@@ -28,7 +28,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && cp /usr/bin/node /opt/runtimes/bin/ \
     && ldd /usr/bin/node | grep "=>" | awk '{print $3}' | xargs -I {} cp {} /opt/runtimes/lib/ || true
 
-# Install PHP 8.3 (more stable than 8.4 for production)
+# Install PHP 8.2 (stable for production)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     php8.2-cli \
     && rm -rf /var/lib/apt/lists/* \

@@ -69,7 +69,7 @@ impl Executor {
         // Prepare container configuration
         let container_name = PathSanitizer::generate_safe_container_name("singleload");
         let mut config = ContainerConfig {
-            image: self.container_manager.config.base_image_name.clone(),
+            self.container_manager.config.base_image_name.clone(),
             name: container_name.clone(),
             memory_limit: self.memory_limit,
             cpu_limit: self.cpu_limit,

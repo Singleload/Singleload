@@ -3,6 +3,7 @@ use crate::errors::SingleloadError;
 use crate::security::{PathSanitizer, SeccompProfile};
 use crate::types::{ContainerConfig, Mount};
 use anyhow::Result;
+use futures::StreamExt;
 use podman_api::models::{ContainerCreateResponse, SpecGenerator};
 use podman_api::opts::{ContainerCreateOpts, ContainerListOpts, ImageBuildOpts};
 use podman_api::{api::Container as PodmanContainer, Podman};
@@ -13,7 +14,7 @@ use tracing::{debug, info, warn};
 
 pub struct ContainerManager {
     podman: Podman,
-    config: Config,
+    pub(crate) config: Config,
     seccomp_profile: SeccompProfile,
 }
 
