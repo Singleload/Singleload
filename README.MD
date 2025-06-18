@@ -37,12 +37,92 @@ Singleload implements multiple security layers:
 
 ### Install Podman (if not already installed)
 
+#### Option 1: Install Podman 5.x Static Binary (Recommended for Debian 12)
+
+Since Debian 12's repositories only contain older versions of Podman (3.x or 4.x), we recommend installing the static binary to get Podman 5.x:
+
 ```bash
-# Debian/Ubuntu
+# Install runtime dependencies from Debian repos
+sudo apt install -y \
+  crun \
+  fuse-overlayfs \
+  slirp4netns \
+  uidmap \
+  libgpgme11 \
+  libseccomp2 \
+  catatonit
+
+# Download Podman 5.2.5 static release
+cd /tmp
+wget https://github.com/containers/podman/releases/download/v5.2.5/podman-remote-release-linux_amd64.tar.gz
+
+# Extract and install
+tar -xzf podman-remote-release-linux_amd64.tar.gz
+sudo cp -r podman-remote-release-linux_amd64/usr/* /usr/
+sudo chmod +x /usr/bin/podman
+
+# Download and install conmon (container monitor)
+wget https://github.com/containers/conmon/releases/download/v2.1.12/conmon.amd64
+sudo install -m 755 conmon.amd64 /usr/bin/conmon
+
+# Create systemd service files for rootless podman
+sudo mkdir -p /usr/lib/systemd/user
+
+sudo tee /usr/lib/systemd/user/podman.service << 'EOF'
+[Unit]
+Description=Podman API Service
+Requires=podman.socket
+After=podman.socket
+Documentation=man:podman-system-service(1)
+StartLimitIntervalSec=0
+
+[Service]
+Type=exec
+KillMode=process
+ExecStart=/usr/bin/podman system service
+
+[Install]
+WantedBy=default.target
+EOF
+
+sudo tee /usr/lib/systemd/user/podman.socket << 'EOF'
+[Unit]
+Description=Podman API Socket
+Documentation=man:podman-system-service(1)
+
+[Socket]
+ListenStream=%t/podman/podman.sock
+SocketMode=0660
+
+[Install]
+WantedBy=sockets.target
+EOF
+
+# Configure rootless mode
+systemctl --user daemon-reload
+```
+
+#### Option 2: Install from Distribution Repositories
+
+For distributions with newer Podman versions:
+
+```bash
+# Debian/Ubuntu (may have older versions)
 sudo apt update
 sudo apt install -y podman
 
-# Configure rootless mode
+# Fedora/RHEL (usually has latest versions)
+sudo dnf install -y podman
+
+# Arch Linux
+sudo pacman -S podman
+```
+
+### Configure Rootless Podman
+
+Regardless of installation method, configure rootless mode:
+
+```bash
 systemctl --user enable --now podman.socket
 ```
 
