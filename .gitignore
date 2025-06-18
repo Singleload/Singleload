@@ -1,0 +1,76 @@
+# Rust build artifacts
+/target/
+**/*.rs.bk
+*.pdb
+
+# Cargo lock file (for libraries, include for binaries)
+# Cargo.lock
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test artifacts
+/tmp/
+/temp/
+*.log
+*.tmp
+
+# Podman/container artifacts
+*.tar
+*.tar.gz
+singleload-runner-*.tar
+
+# Local configuration
+.env
+.env.local
+config.local.toml
+
+# OS files
+Thumbs.db
+desktop.ini
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# Coverage reports
+coverage/
+*.lcov
+tarpaulin-report.html
+
+# Profiling data
+*.profdata
+*.profraw
+perf.data
+perf.data.old
+flamegraph.svg
+
+# Documentation build
+/docs/_build/
+/docs/_site/
+
+# Python cache (for test scripts)
+__pycache__/
+*.pyc
+*.pyo
+
+# Node modules (for test scripts)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build directories
+/build/
+/dist/
+/out/
+
+# Local testing
+/test-scripts/
+/sandbox/
+local-test-*
