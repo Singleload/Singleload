@@ -39,31 +39,33 @@ Singleload implements multiple security layers:
 
 #### Option 1: Install Podman 5.x Static Binary (Recommended for Debian 12)
 
-Since Debian 12's repositories only contain older versions of Podman (3.x or 4.x), we recommend installing the static binary to get Podman 5.x:
+Since Debian 12's repositories only contain older versions of Podman (3.x or 4.x), we recommend installing a static binary build:
 
 ```bash
 # Install runtime dependencies from Debian repos
 sudo apt install -y \
-  crun \
+  uidmap \
   fuse-overlayfs \
   slirp4netns \
-  uidmap \
-  libgpgme11 \
-  libseccomp2 \
-  catatonit
+  crun
 
-# Download Podman 5.2.5 static release
-cd /tmp
-wget https://github.com/containers/podman/releases/download/v5.2.5/podman-remote-release-linux_amd64.tar.gz
+# Download Podman static build (maintained by mgoltzsche)
+# This includes podman, crun, conmon, fuse-overlayfs, and netavark
+curl -fsSL -o podman-linux-amd64.tar.gz https://github.com/mgoltzsche/podman-static/releases/latest/download/podman-linux-amd64.tar.gz
 
-# Extract and install
-tar -xzf podman-remote-release-linux_amd64.tar.gz
-sudo cp -r podman-remote-release-linux_amd64/usr/* /usr/
-sudo chmod +x /usr/bin/podman
+# Extract and inspect the archive
+tar -tzf podman-linux-amd64.tar.gz
 
-# Download and install conmon (container monitor)
-wget https://github.com/containers/conmon/releases/download/v2.1.12/conmon.amd64
-sudo install -m 755 conmon.amd64 /usr/bin/conmon
+# Install the binaries and configuration
+tar -xzf podman-linux-amd64.tar.gz
+sudo cp -r podman-linux-amd64/usr podman-linux-amd64/etc /
+
+# Clean up
+rm -rf podman-linux-amd64*
+
+# Verify installation
+podman --version
+# Should show: podman version 5.x.x
 
 # Create systemd service files for rootless podman
 sudo mkdir -p /usr/lib/systemd/user
@@ -79,7 +81,7 @@ StartLimitIntervalSec=0
 [Service]
 Type=exec
 KillMode=process
-ExecStart=/usr/bin/podman system service
+ExecStart=/usr/local/bin/podman system service
 
 [Install]
 WantedBy=default.target
@@ -98,9 +100,11 @@ SocketMode=0660
 WantedBy=sockets.target
 EOF
 
-# Configure rootless mode
+# Reload systemd
 systemctl --user daemon-reload
 ```
+
+**Note**: The static builds from mgoltzsche/podman-static are community-maintained. For production environments, consider building from source or using official distribution packages.
 
 #### Option 2: Install from Distribution Repositories
 
