@@ -1,6 +1,8 @@
 # Singleload
 
-A secure, production-grade Rust CLI tool for executing untrusted scripts in isolated Podman containers.
+Singleload is a robust Rust CLI utility that empowers developers and sysadmins to execute untrusted or potentially harmful scripts securely inside isolated Podman containers. Leveraging container-level sandboxing, it ensures your host system remains completely safe from script side effects or security risks.
+
+Beyond just safe execution, Singleload outputs detailed, structured JSON results, enabling seamless integration into automation workflows, CI/CD pipelines, or even custom APIs. Whether you want to run arbitrary code on demand, build a backend service around script execution, or simply contain risky operations — Singleload provides a secure, flexible, and extensible foundation.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
